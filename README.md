@@ -1,5 +1,5 @@
 # Computer-technologies-in-physics
-**Laboratory works**
+## Laboratory works
 
 ### done :blue_book:
  - laboratory work №1 	:point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=laboratory_work_1.ipynb) 
