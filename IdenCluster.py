@@ -9,10 +9,9 @@ class IdenCluster:
     """Данный класс позволяет создать кластер базовой модели Идена, 
        визуальное представление итогово кластера, анимация роста кластера."""
     
-
-    def __init__(self, lattice_size, time_record=False):
+    def __init__(self, lattice_size):
         self.lattice_size = int(lattice_size)
-        self.time_record = time_record
+        #self.time_record = time_record
         self.l = int(self.lattice_size / 2)
 
         #Массив координат частиц
@@ -33,50 +32,32 @@ class IdenCluster:
         self.x = []
         self.y = []
         self.type = []
-    
 
-    def growth(self, records=False, frame=1):
 
-        self.records = records
-        self.frame = abs(frame)
+    def add_particles(self, random_node):
+        i = random_node
+        if self.particles[self.perimeter[i][0]][self.perimeter[i][1]] == 0:
+            self.particles[self.perimeter[i][0]][self.perimeter[i][1]] = 1
+            self.count_particles += 1
+            return True
+        else:
+            return False
 
-        if self.records:
-            self.__growth_recording()
 
-        #Условие остановки роста
-        while np.max(self.perimeter) < self.lattice_size - 1 and np.min(self.perimeter) > 0:
-            
-            #Выбор случайного узла частицы
-            i = np.random.randint(0, len(self.perimeter))
-            #Присоединение частицы
-            if self.particles[self.perimeter[i][0]][self.perimeter[i][1]] == 0:
-                self.particles[self.perimeter[i][0]][self.perimeter[i][1]] = 1
-                self.count_particles += 1
-            else:
-                continue
-
-            #Вычисление нового периметра кластера
-            for d in self.displacement:
-                node = self.perimeter[i] + d
+    def update_perimeter(self, random_node):
+        i = random_node
+        for d in self.displacement:
+            node = self.perimeter[i] + d
                 
-                if not self.particles[node[0]][node[1]]:
-                    self.perimeter = np.append(self.perimeter, [node], axis=0)
+            if self.particles[node[0]][node[1]] == 0 and\
+                len(np.where(np.sum(np.isclose(self.perimeter, node), axis=1) == 2)[0]) == 0:
+                 
+                self.perimeter = np.append(self.perimeter, [node], axis=0)
 
-            self.perimeter = np.delete(self.perimeter, i, axis=0)
-
-            if self.records:
-                self.__growth_recording()
-        
-        if self.records:
-            self.df = pd.DataFrame({
-                'count particles': self.cluster, 
-                'x': [x - self.l for x in self.x], 
-                'y': [y - self.l for y in self.y], 
-                'type' : self.type
-            })
+        self.perimeter = np.delete(self.perimeter, i, axis=0)
 
 
-    def __growth_recording(self):
+    def _growth_recording(self):
         #Один фрейм анимации содержит кратное количество частиц значению фрейма
         if self.count_particles % self.frame == 0 or self.count_particles == 1:
             
@@ -120,8 +101,8 @@ class IdenCluster:
             self.fig = px.scatter(x=x, y=y, color=color_values, range_x=[-self.l, self.l], range_y=[-self.l, self.l], 
             color_continuous_scale=colors[np.random.randint(0, 4)], title=f'Count particles = {self.count_particles}')
 
-
         self.fig.show()
+
 
     def save_vizualization(self, name):
         if self.records:
@@ -132,9 +113,103 @@ class IdenCluster:
 
 
 
+class BasicModel(IdenCluster):
+    def growth(self, records=False, frame=1):
+
+        self.records = records
+        self.frame = abs(frame)
+
+        if self.records:
+            self._growth_recording()
+
+        #Условие остановки роста
+        while np.max(self.perimeter) < self.lattice_size - 1 and np.min(self.perimeter) > 0:
+            
+            #Выбор случайного узла частицы
+            i = np.random.randint(0, len(self.perimeter))
+
+            #Присоединение частицы
+            if not self.add_particles(i): continue
+            
+            #Вычисление нового периметра кластера
+            self.update_perimeter(i)
+
+            if self.records:
+                self._growth_recording()
+        
+        if self.records:
+            self.df = pd.DataFrame({
+                'count particles': self.cluster, 
+                'x': [x - self.l for x in self.x], 
+                'y': [y - self.l for y in self.y], 
+                'type' : self.type
+            })
+
+
+
+
+class ScreenedGrowthModel(IdenCluster):
+
+    def __init__(self, lattice_size, a, psi, probability):
+        super().__init__(lattice_size)
+        self.a = a
+        self.psi = psi
+        self.probability = probability
+
+
+    def probabilitys_join(self):
+        x, y = np.where(self.particles != 0)
+        probabilitys = np.empty(len(self.perimeter))
+
+        for id, node  in enumerate(self.perimeter):
+            distance = np.sqrt((x - node[0])**2 + (y - node[1])**2)
+            probabilitys[id] = np.prod(np.exp(-self.a / (distance**self.psi)))
+
+        stat_sum = np.sum(probabilitys)
+        probabilitys = probabilitys / stat_sum
+
+        index = np.where(probabilitys >= self.probability)[0]
+        return index
+
+
+    def growth(self, records=False, frame=1):
+        self.records = records
+        self.frame = abs(frame)
+
+        if self.records:
+            self._growth_recording()
+
+        while np.max(self.perimeter) < self.lattice_size - 1 and np.min(self.perimeter) > 0:
+            
+            #Вероятность присоединения
+            index = self.probabilitys_join()
+            if len(index) == 0:
+                break
+
+            #Выбор случайного узла частицы
+            i = np.random.choice(index)
+            #Присоединение частицы
+            if not self.add_particles(i): continue
+            #Вычисление нового периметра кластера
+            self.update_perimeter(i)
+
+            if self.records:
+                self._growth_recording()
+        
+        if self.records:
+            self.df = pd.DataFrame({
+                'count particles': self.cluster, 
+                'x': [x - self.l for x in self.x], 
+                'y': [y - self.l for y in self.y], 
+                'type' : self.type
+            })
+
+
+
+
 if __name__ == '__main__':
-    for n in [21]:
-        my_claster = IdenCluster(n)
-        my_claster.growth(records=1, frame=10)
+    for n in [130]:
+        my_claster = ScreenedGrowthModel(n, 1, 2, 0.007)
+        my_claster.growth()
         my_claster.vizualization()
-        #my_claster.save_vizualization(n)
+        #my_claster.save_vizualization(f'/screened_growth_model/')
