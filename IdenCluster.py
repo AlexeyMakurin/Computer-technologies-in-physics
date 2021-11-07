@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 import plotly.express as px
-
-
+import plotly.graph_objects as go
 
 
 class IdenCluster:
@@ -28,10 +27,9 @@ class IdenCluster:
         self.perimeter = self.displacement + self.l
 
         #Необходимы для записи роста кластера
-        self.cluster = []
-        self.x = []
-        self.y = []
-        self.type = []
+        self.cluster, self.type = [], []
+        self.x, self.y = [], []
+        self.radius_g, self.particles_count, self.count_node = [], [], []
 
 
     def add_particles(self, random_node):
@@ -57,22 +55,27 @@ class IdenCluster:
         self.perimeter = np.delete(self.perimeter, i, axis=0)
 
 
+    def radius_of_gyration(self):
+        x, y = np.where(self.particles != 0)
+        return np.sqrt(np.sum((x - np.mean(x))**2 +  (y - np.mean(y))**2)) / len(x), len(x), len(self.perimeter)
+
+
     def _growth_recording(self):
         #Один фрейм анимации содержит кратное количество частиц значению фрейма
         if self.count_particles % self.frame == 0 or self.count_particles == 1:
             
-            x, y = np.where(self.particles>=0)
+            x, y = np.where(self.particles >= 0)
             self.x.extend(x)
             self.y.extend(y)
             self.cluster.extend([self.count_particles] * len(x))
-            
+
             #Сортируем ячейки сетки на заполненые и пустые
             for x, y in zip(x, y):
                 if self.particles[x][y] == 0:
                     self.type.append(0)
                 else:
                     self.type.append(1)
-            
+
 
     def vizualization(self):
         px.defaults.width = 800
@@ -85,7 +88,15 @@ class IdenCluster:
         px.colors.sequential.PuBu
         ]
         
-        if self.records:
+        if self.frame:
+
+            self.df = pd.DataFrame({
+                'count particles': self.cluster, 
+                'x': [x - self.l for x in self.x], 
+                'y': [y - self.l for y in self.y], 
+                'type' : self.type
+            })
+
             color_values = np.sin(np.sqrt(self.df['x']**2 + self.df['y']**2)) + np.log(np.sqrt(self.df['x']**2 + self.df['y']**2) + 1)
 
             self.fig = px.scatter(self.df, x='x', y='y', animation_frame='count particles', size="type", color=color_values, 
@@ -105,7 +116,7 @@ class IdenCluster:
 
 
     def save_vizualization(self, name):
-        if self.records:
+        if self.frame:
             self.fig.write_html(f"iden_cluster_{name}.html")
         else:
             self.fig.write_image(f"images/iden_cluster_{name}.svg")
@@ -114,17 +125,24 @@ class IdenCluster:
 
 
 class BasicModel(IdenCluster):
-    def growth(self, records=False, frame=1):
+    def growth(self, frame=0, R_g=False):
 
-        self.records = records
+        self.R_g = R_g
         self.frame = abs(frame)
 
-        if self.records:
+        if self.frame:
             self._growth_recording()
 
         #Условие остановки роста
         while np.max(self.perimeter) < self.lattice_size - 1 and np.min(self.perimeter) > 0:
             
+            if self.R_g and self.count_particles % 10 == 0:
+                r_g = self.radius_of_gyration()
+                self.radius_g.append(r_g[0])
+                self.particles_count.append(r_g[1])
+                self.count_node.append(r_g[2])
+
+
             #Выбор случайного узла частицы
             i = np.random.randint(0, len(self.perimeter))
 
@@ -134,17 +152,8 @@ class BasicModel(IdenCluster):
             #Вычисление нового периметра кластера
             self.update_perimeter(i)
 
-            if self.records:
-                self._growth_recording()
-        
-        if self.records:
-            self.df = pd.DataFrame({
-                'count particles': self.cluster, 
-                'x': [x - self.l for x in self.x], 
-                'y': [y - self.l for y in self.y], 
-                'type' : self.type
-            })
-
+            if self.frame:
+                self._growth_recording()    
 
 
 
@@ -172,15 +181,22 @@ class ScreenedGrowthModel(IdenCluster):
         return index
 
 
-    def growth(self, records=False, frame=1):
-        self.records = records
+    def growth(self, frame=0, R_g=False):
         self.frame = abs(frame)
+        self.R_g = R_g
 
-        if self.records:
+        if self.frame:
             self._growth_recording()
 
         while np.max(self.perimeter) < self.lattice_size - 1 and np.min(self.perimeter) > 0:
             
+            if self.R_g and self.count_particles % 10 == 0:
+                r_g = self.radius_of_gyration()
+                self.radius_g.append(r_g[0])
+                self.particles_count.append(r_g[1])
+                self.count_node.append(r_g[2])
+
+
             #Вероятность присоединения
             index = self.probabilitys_join()
             if len(index) == 0:
@@ -193,23 +209,22 @@ class ScreenedGrowthModel(IdenCluster):
             #Вычисление нового периметра кластера
             self.update_perimeter(i)
 
-            if self.records:
+            if self.frame:
                 self._growth_recording()
-        
-        if self.records:
-            self.df = pd.DataFrame({
-                'count particles': self.cluster, 
-                'x': [x - self.l for x in self.x], 
-                'y': [y - self.l for y in self.y], 
-                'type' : self.type
-            })
 
 
 
 
 if __name__ == '__main__':
-    for n in [130]:
-        my_claster = ScreenedGrowthModel(n, 1, 2, 0.007)
+    for n in [121]:
+        my_claster = ScreenedGrowthModel(n, 1, 2, 0.005)
+        #my_claster = BasicModel(n)
         my_claster.growth()
         my_claster.vizualization()
+      
         #my_claster.save_vizualization(f'/screened_growth_model/')
+    #y = my_claster.radius_g
+    #x = my_claster.particles_count
+
+    #fig = px.scatter(x=x, y=y, log_y=True, log_x=True)
+    #fig.show()
