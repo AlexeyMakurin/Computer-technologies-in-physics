@@ -5,7 +5,7 @@ import plotly.express as px
 
 
 class IdenCluster:
-    """Данный класс позволяет создать кластер базовой модели Идена, 
+    """Данный класс позволяет создать кластер модели Идена, 
        визуальное представление итогово кластера, анимация роста кластера."""
     
     def __init__(self, lattice_size):
@@ -76,20 +76,21 @@ class IdenCluster:
                 else:
                     self.type.append(1)
 
+    
+    def _recording_radius_of_gyration(self):
+        if self.count_particles % 10 == 0:
+            r_g = self.radius_of_gyration()
+            self.radius_g.append(r_g[0])
+            self.particles_count.append(r_g[1])
+            self.count_node.append(r_g[2])
+
 
     def vizualization(self):
-        px.defaults.width = 800
-        px.defaults.height = 800
+        px.defaults.width, px.defaults.height = 800, 800
 
-        colors = [
-        px.colors.sequential.Burg, 
-        px.colors.sequential.Purpor, 
-        px.colors.sequential.Tealgrn,
-        px.colors.sequential.PuBu
-        ]
+        colors = [px.colors.sequential.Burg, px.colors.sequential.Purpor, px.colors.sequential.Tealgrn,px.colors.sequential.PuBu]
         
         if self.frame:
-
             self.df = pd.DataFrame({
                 'count particles': self.cluster, 
                 'x': [x - self.l for x in self.x], 
@@ -125,106 +126,134 @@ class IdenCluster:
 
 
 class BasicModel(IdenCluster):
-    def growth(self, frame=0, R_g=False):
 
+    def growth(self, frame=0, R_g=False):
         self.R_g = R_g
         self.frame = abs(frame)
+        self.progress_counter = -1
+        
+        while True:
+            #запись текущего состояния кластера
+            if self.frame:
+                self._growth_recording()
 
-        if self.frame:
-            self._growth_recording()
+            if self.R_g:
+                self._recording_radius_of_gyration()
 
-        #Условие остановки роста
-        while np.max(self.perimeter) < self.lattice_size - 1 and np.min(self.perimeter) > 0:
+            self.counter = np.max(np.abs(self.perimeter - self.l))
             
-            if self.R_g and self.count_particles % 10 == 0:
-                r_g = self.radius_of_gyration()
-                self.radius_g.append(r_g[0])
-                self.particles_count.append(r_g[1])
-                self.count_node.append(r_g[2])
-
+            #Условие завершения роста
+            if self.counter >= self.l - 1:
+                break
 
             #Выбор случайного узла частицы
             i = np.random.randint(0, len(self.perimeter))
 
             #Присоединение частицы
-            if not self.add_particles(i): continue
-            
+            self.add_particles(i)
+
             #Вычисление нового периметра кластера
             self.update_perimeter(i)
 
-            if self.frame:
-                self._growth_recording()    
 
 
 
 class ScreenedGrowthModel(IdenCluster):
 
-    def __init__(self, lattice_size, a, psi, probability):
+    def __init__(self, lattice_size, a, psi):
         super().__init__(lattice_size)
         self.a = a
         self.psi = psi
-        self.probability = probability
 
 
     def probabilitys_join(self):
+        #Отбор заполненых ячеек решетки
         x, y = np.where(self.particles != 0)
-        probabilitys = np.empty(len(self.perimeter))
 
+        probabilitys = np.empty(len(self.perimeter))
+        
+        #Вычисление вероятностей (без нормировки) для каждого узла периметра кластера
         for id, node  in enumerate(self.perimeter):
             distance = np.sqrt((x - node[0])**2 + (y - node[1])**2)
             probabilitys[id] = np.prod(np.exp(-self.a / (distance**self.psi)))
 
-        stat_sum = np.sum(probabilitys)
-        probabilitys = probabilitys / stat_sum
+        
+        try:
+            stat_sum = np.sum(probabilitys, dtype=float)
+            if stat_sum == 0:
+                raise ZeroDivisionError("The stat sum is zero!\n(-a / r^psi) -> -inf\nIt is necessary to decrease the parameter: 'a'\nor increase the parameter: 'psi'\n")
+            #Нормирование вероятностей
+            probabilitys /= stat_sum
+        except ZeroDivisionError as ex:
+            print(ex)
+            exit()
 
-        index = np.where(probabilitys >= self.probability)[0]
-        return index
+        
+        #Реализация случайного выбора узла
+        dtype = [('probability', float), ('id', int)]
+        values = [(probability, id) for id, probability in enumerate(probabilitys)]
+        probabilitys = np.array(values, dtype)
+        probabilitys.sort(order='probability')
+
+        i = np.random.uniform(0, 1)
+        s = 0
+        for item in probabilitys:
+            if i >= s and i < item[0] + s:
+                return item[1]
+            s += item[0]
+
+
+    def progress(self):
+        progress_counter = int((self.counter / self.l) * 100)
+        if progress_counter % 5 == 0 and progress_counter != self.progress_counter:
+                self.progress_counter = progress_counter
+                print(f'{progress_counter}%')
 
 
     def growth(self, frame=0, R_g=False):
         self.frame = abs(frame)
         self.R_g = R_g
-
-        if self.frame:
-            self._growth_recording()
-
-        while np.max(self.perimeter) < self.lattice_size - 1 and np.min(self.perimeter) > 0:
-            
-            if self.R_g and self.count_particles % 10 == 0:
-                r_g = self.radius_of_gyration()
-                self.radius_g.append(r_g[0])
-                self.particles_count.append(r_g[1])
-                self.count_node.append(r_g[2])
-
-
-            #Вероятность присоединения
-            index = self.probabilitys_join()
-            if len(index) == 0:
-                break
-
-            #Выбор случайного узла частицы
-            i = np.random.choice(index)
-            #Присоединение частицы
-            if not self.add_particles(i): continue
-            #Вычисление нового периметра кластера
-            self.update_perimeter(i)
-
+        self.progress_counter = -1
+        
+        while True:
+            #запись текущего состояния кластера
             if self.frame:
                 self._growth_recording()
+
+            if self.R_g:
+                self._recording_radius_of_gyration()
+
+            self.counter = np.max(np.abs(self.perimeter - self.l))
+            
+            #Условие завершения роста
+            if self.counter >= self.l - 1:
+                break
+            
+            #Отображение степени прогресса в %
+            self.progress()
+
+            #Выбор случайного узла частицы
+            i = self.probabilitys_join()
+
+            #Присоединение частицы
+            self.add_particles(i)
+
+            #Вычисление нового периметра кластера
+            self.update_perimeter(i)
 
 
 
 
 if __name__ == '__main__':
     for n in [121]:
-        my_claster = ScreenedGrowthModel(n, 1, 2, 0.005)
+        #my_claster = ScreenedGrowthModel(n, 1, -0.5)
         my_claster = BasicModel(n)
-        my_claster.growth(R_g=True)
+        my_claster.growth()
         my_claster.vizualization()
       
         #my_claster.save_vizualization(f'/screened_growth_model/')
-    y = my_claster.radius_g
-    x = my_claster.particles_count
+    #y = my_claster.radius_g
+    #x = my_claster.particles_count
 
-    fig = px.scatter(x=x, y=y, log_y=True, log_x=True)
-    fig.show()
+    #fig = px.scatter(x=x, y=y, log_y=True, log_x=True)
+    #fig.show()
