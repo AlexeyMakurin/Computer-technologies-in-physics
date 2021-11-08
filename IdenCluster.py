@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
+
 
 
 class IdenCluster:
@@ -57,7 +57,7 @@ class IdenCluster:
 
     def radius_of_gyration(self):
         x, y = np.where(self.particles != 0)
-        return np.sqrt(np.sum((x - np.mean(x))**2 +  (y - np.mean(y))**2)) / len(x), len(x), len(self.perimeter)
+        return np.sqrt(np.sum((x - np.mean(x))**2 +  (y - np.mean(y))**2) / len(x)), len(x), len(self.perimeter)
 
 
     def _growth_recording(self):
@@ -218,13 +218,13 @@ class ScreenedGrowthModel(IdenCluster):
 if __name__ == '__main__':
     for n in [121]:
         my_claster = ScreenedGrowthModel(n, 1, 2, 0.005)
-        #my_claster = BasicModel(n)
-        my_claster.growth()
+        my_claster = BasicModel(n)
+        my_claster.growth(R_g=True)
         my_claster.vizualization()
       
         #my_claster.save_vizualization(f'/screened_growth_model/')
-    #y = my_claster.radius_g
-    #x = my_claster.particles_count
+    y = my_claster.radius_g
+    x = my_claster.particles_count
 
-    #fig = px.scatter(x=x, y=y, log_y=True, log_x=True)
-    #fig.show()
+    fig = px.scatter(x=x, y=y, log_y=True, log_x=True)
+    fig.show()
