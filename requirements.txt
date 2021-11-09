@@ -3,3 +3,4 @@ numpy
 pandas
 plotly
 ipywidgets
+jupyter-dash
