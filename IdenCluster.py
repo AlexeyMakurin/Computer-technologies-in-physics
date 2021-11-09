@@ -204,17 +204,17 @@ class ScreenedGrowthModel(IdenCluster):
 
 
     def progress(self):
-        progress_counter = int((self.counter / self.l) * 100)
-        if progress_counter % 5 == 0 and progress_counter != self.progress_counter:
+        progress_counter = int(self.counter / (self.l - 1)  * 100)
+        if progress_counter != self.progress_counter:
+                print(f'{progress_counter}%', end=' ')
                 self.progress_counter = progress_counter
-                print(f'{progress_counter}%')
 
 
     def growth(self, frame=0, R_g=False):
         self.frame = abs(frame)
         self.R_g = R_g
-        self.progress_counter = -1
-        
+        self.progress_counter = 0
+
         while True:
             #запись текущего состояния кластера
             if self.frame:
@@ -225,15 +225,13 @@ class ScreenedGrowthModel(IdenCluster):
 
             self.counter = np.max(np.abs(self.perimeter - self.l))
             
-            #Условие завершения роста
-            if self.counter >= self.l - 1:
-                break
-            
             #Отображение степени прогресса в %
             self.progress()
-
-            #Выбор случайного узла частицы
-            i = self.probabilitys_join()
+            
+            if self.counter >= self.l - 1:  #Условие завершения роста
+                break
+           
+            i = self.probabilitys_join()  #Выбор случайного узла частицы
 
             #Присоединение частицы
             self.add_particles(i)
@@ -245,10 +243,10 @@ class ScreenedGrowthModel(IdenCluster):
 
 
 if __name__ == '__main__':
-    for n in [121]:
-        #my_claster = ScreenedGrowthModel(n, 1, -0.5)
-        my_claster = BasicModel(n)
-        my_claster.growth()
+    for n in [31]:
+        my_claster = ScreenedGrowthModel(n, 1, 2)
+        #my_claster = BasicModel(n)
+        my_claster.growth(frame=10)
         my_claster.vizualization()
       
         #my_claster.save_vizualization(f'/screened_growth_model/')
