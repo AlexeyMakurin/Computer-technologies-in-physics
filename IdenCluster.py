@@ -229,6 +229,7 @@ class ScreenedGrowthModel(IdenCluster):
             self.progress()
             
             if self.counter >= self.l - 1:  #Условие завершения роста
+                print('\n')
                 break
            
             i = self.probabilitys_join()  #Выбор случайного узла частицы
