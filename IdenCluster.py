@@ -34,9 +34,13 @@ class IdenCluster:
 
     def add_particles(self, random_node):
         i = random_node
+        self.sequence_x = []
+        self.sequence_y = []
+
         if self.particles[self.perimeter[i][0]][self.perimeter[i][1]] == 0:
             self.particles[self.perimeter[i][0]][self.perimeter[i][1]] = 1
             self.count_particles += 1
+            self.sequence_x.append(i)
             return True
         else:
             return False
@@ -190,17 +194,17 @@ class ScreenedGrowthModel(IdenCluster):
 
         
         #Реализация случайного выбора узла
-        dtype = [('probability', float), ('id', int)]
-        values = [(probability, id) for id, probability in enumerate(probabilitys)]
-        probabilitys = np.array(values, dtype)
-        probabilitys.sort(order='probability')
+        #dtype = [('probability', float), ('id', int)]
+        #values = [(probability, id) for id, probability in enumerate(probabilitys)]
+        #probabilitys = np.array(values, dtype)
+        #probabilitys.sort(order='probability')
 
         i = np.random.uniform(0, 1)
         s = 0
-        for item in probabilitys:
-            if i >= s and i < item[0] + s:
-                return item[1]
-            s += item[0]
+        for id in range(len(probabilitys)):
+            if i < probabilitys[id] + s:
+                return id
+            s += probabilitys[id]
 
 
     def progress(self):
@@ -244,11 +248,12 @@ class ScreenedGrowthModel(IdenCluster):
 
 
 if __name__ == '__main__':
-    for n in [31]:
-        my_claster = ScreenedGrowthModel(n, 1, 2)
-        #my_claster = BasicModel(n)
-        my_claster.growth(frame=10)
-        my_claster.vizualization()
+    for n in [10]:
+        #my_claster = ScreenedGrowthModel(n, 1, 2)
+        my_claster = BasicModel(n)
+        my_claster.growth()
+        #my_claster.vizualization()
+        print(my_claster.sequence)
       
         #my_claster.save_vizualization(f'/screened_growth_model/')
     #y = my_claster.radius_g
