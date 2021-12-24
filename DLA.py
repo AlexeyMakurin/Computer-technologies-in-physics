@@ -6,7 +6,7 @@ import plotly.express as px
 
 class LevelMap:
 
-    def __init__(self, size, transition_map=3):
+    def __init__(self, size: int, transition_map=3):
         self.size_map = int(size)
 
         self.radius = int(size / 2)
@@ -46,15 +46,14 @@ class LevelMap:
 class DLA:
 
     def __init__(self, size: int, transition_map=3):
-        
-        self.size = size if size % 3 == 0 and 1 <= size / 3 <= 8 else size - size % 3
+        self.size = size
         self.radius = int(size / 2)
         self.list_maps = []
         
         i = self.size
         self.tm = transition_map
 
-        while i >= 8:
+        while i > 8:
             self.list_maps.append(LevelMap(i, transition_map=self.tm))
             i /= self.tm
            
@@ -192,11 +191,8 @@ class DLAMGC:
 
 
 if __name__ == '__main__':
-    my_dla = DLAMGC(216)
+    my_dla = DLA(11 * 3**4)
     my_dla.growth()
     my_dla.visualization()
-    
-    #dla = DLAMGC(128)
-    #dla.growth()
     
     
