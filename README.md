@@ -2,6 +2,9 @@
 
 Here are reports on laboratory work for the course "Computer Technologies in Physics" of the Department of Phase Transitions of Perm State National Research University.
 
+To write simulations, analyze and visualize data, the Python 3.9 programming language was used.
+
+
 ## Laboratory works (done :blue_book:)
 
 ### laboratory work №1 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=laboratory_work_1.ipynb) 
@@ -53,9 +56,9 @@ Here are reports on laboratory work for the course "Computer Technologies in Phy
 
 - Determination of the fractal dimension of a cluster,
 
-- Simulation of the growth of a DLA cluster on growth centers uniformly distributed on a circle of radius $R$,
+- Simulation of the growth of a DLA cluster on growth centers uniformly distributed on a circle of radius,
 
-- Investigation of the dependence of the number of particles in a cluster $N$ on the radius of the circle $R$;
+- Investigation of the dependence of the number of particles in a cluster on the radius of the circle;
 
 ![](images/res1.png) 
 |                          |                          |
