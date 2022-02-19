@@ -8,7 +8,7 @@
 
 - laboratory work №2 variant 1 	:point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=laboratory_work_2_variant1.ipynb)
 
-- laboratory work №3 variant 2 :point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=https%3A%2F%2Fgithub.com%2FAlexeyMakurin%2FComputer-technologies-in-physics%2Fblob%2Fmain%2Flaboratory_work_3%2Flaboratory_work_3_variant2.ipynb)
+- laboratory work №3 variant 2 :point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=laboratory_work_3_variant2.ipynb)
 
 - laboratory work №4 :point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=laboratory_work_4.ipynb)
 
