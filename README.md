@@ -15,7 +15,7 @@ Topic: Monte Carlo Methods
 
 - laboratory work №3 variant 2 :point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=laboratory_work_3_variant2.ipynb)
 
-![](images/lab3.svg) 
+![](images/lab3.png) 
 
 
 - laboratory work №4 :point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=laboratory_work_4.ipynb)
