@@ -27,9 +27,9 @@ To write simulations, analyze and visualize data, the Python 3.9 programming lan
 - Box-Muller method,
 - Metropolis algorithm;
 
-![](images/lab2.png)
-
-
+|                          |                          |
+:-------------------------:|:-------------------------:
+![](images/lab2_1.gif)    |  ![](images/lab2_2.gif)
 
 
 ### laboratory work №3 variant 2 :point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=laboratory_work_3_variant2.ipynb)
