@@ -49,6 +49,8 @@ To write simulations, analyze and visualize data, the Python 3.9 programming lan
 
 **Topic:** Stochastic Growth Models.
 
+**Description:**  Implementation of the algorithms of the basic Eden model and the screened growth model. Finding the cluster dimension.
+
 |                          |                          |
 :-------------------------:|:-------------------------:
 ![](images/lab4.gif)    |  ![](images/lab4_1.png)  
