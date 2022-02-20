@@ -49,6 +49,11 @@ To write simulations, analyze and visualize data, the Python 3.9 programming lan
 
 **Topic:** Stochastic Growth Models.
 
+![](images/lab4.gif)   
+
+
+
+
 ### laboratory work №5 :point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=laboratory_work_5.ipynb)
 
 **Topic:** Diffusion Controlled Aggregation.
