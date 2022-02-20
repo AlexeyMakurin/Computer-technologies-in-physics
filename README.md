@@ -49,7 +49,10 @@ To write simulations, analyze and visualize data, the Python 3.9 programming lan
 
 **Topic:** Stochastic Growth Models.
 
-![](images/lab4.gif)   
+|                          |                          |
+:-------------------------:|:-------------------------:
+![](images/lab4.gif)    |  ![](images/lab4_1.png)  
+  
 
 
 
