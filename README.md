@@ -79,6 +79,8 @@ To write simulations, analyze and visualize data, the Python 3.9 programming lan
 ![](images/res033.png)     |  ![](images/res011.png) 
 ![](images/res004.png)     |  ![](images/res001.png) 
 
+
+
 #### RW laboratory work №1 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=RW_laboratory_work_1.ipynb) 
 ***Topic:** Correlation Analysis.
 
@@ -91,8 +93,14 @@ To write simulations, analyze and visualize data, the Python 3.9 programming lan
 ![](images/lab1_nir.png) 
 
 
+
+RW laboratory work №2 :point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=RW_laboratory_work_2.ipynb)
+
+**Topic:** Fourier transform and wavelet analysis.
+
+![](images/lab2_nir.png) 
+
 ### in progress :writing_hand:
 - laboratory work №2 variant 2
 - laboratory work №3 variant 1
-- RW laboratory work №2 :point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=RW_laboratory_work_2.ipynb)
 - RW laboratory work №3 :point_right: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=RW_laboratory_work_3.ipynb)
