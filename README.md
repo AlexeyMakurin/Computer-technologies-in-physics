@@ -70,7 +70,8 @@ To write simulations, analyze and visualize data, the Python 3.9 programming lan
 
 - Simulation of the growth of a DLA cluster on growth centers uniformly distributed on a circle of radius,
 
-- Investigation of the dependence of the number of particles in a cluster on the radius of the circle;
+- Investigation of the dependence of the number of particles in a cluster on the radius of the circle.
+
 
 ![](images/res1.png) 
 |                          |                          |
@@ -79,8 +80,15 @@ To write simulations, analyze and visualize data, the Python 3.9 programming lan
 ![](images/res004.png)     |  ![](images/res001.png) 
 
 #### RW laboratory work №1 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AlexeyMakurin/Computer-technologies-in-physics/main?labpath=RW_laboratory_work_1.ipynb) 
+***Topic:** Correlation Analysis.
 
-This laboratory is related to the topic of Correlation Analysis;
+**Description:** 
+- Finding the Autocorrelation Function and Correlation Time for White Noise and Periodic Signal,
+
+- Finding the Autocorrelation Function and Correlation Time for the Morris-Lecar Neuron Model.
+
+
+![](images/lab1_nir.png) 
 
 
 ### in progress :writing_hand:
